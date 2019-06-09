@@ -52,6 +52,10 @@ class NewsfeedViewController: UIViewController, NewsfeedDisplayLogic, NewsfeedCo
   }
     
     private func setupTableView() {
+        
+        let topInset: CGFloat = 8
+        self.table.contentInset.top = topInset
+        
         table.register(UINib(nibName: "NewsfeedCell", bundle: nil), forCellReuseIdentifier: NewsfeedCell.reuseId)
         table.register(NewsfeedCodeCell.self, forCellReuseIdentifier: NewsfeedCodeCell.reuseId)
         
@@ -84,8 +88,15 @@ class NewsfeedViewController: UIViewController, NewsfeedDisplayLogic, NewsfeedCo
     }
   }
     
-    // MARK: NewsfeedCodeCellDelegate
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y > scrollView.contentSize.height / 1.1 {
+            interactor?.makeRequest(request: .getNextBatch)
+        }
+    }
     
+    
+    
+    // MARK: NewsfeedCodeCellDelegate
     func revealPost(for cell: NewsfeedCodeCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         let cellViewModel = feedViewModel.cells[indexPath.row]
@@ -100,7 +111,7 @@ extension NewsfeedViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // переключение между двумя различными походами к созданию ячейки, оба работают одинаково
+        
         //let cell = tableView.dequeueReusableCell(withIdentifier: NewsfeedCell.reuseId, for: indexPath) as! NewsfeedCell
         let cell = tableView.dequeueReusableCell(withIdentifier: NewsfeedCodeCell.reuseId, for: indexPath) as! NewsfeedCodeCell
         let cellViewModel = feedViewModel.cells[indexPath.row]

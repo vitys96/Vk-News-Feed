@@ -51,17 +51,30 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
         
         let sizes = cellLayoutCalculator.sizes(postText: feedItem.text, photoAttachments: photoAttachments, isFullSizedPost: isFullSized)
         
+        let postText = feedItem.text?.replacingOccurrences(of: "<br>", with: "\n")
+        
         return FeedViewModel.Cell.init(postId: feedItem.postId,
                                        iconUrlString: profile.photo,
                                        name: profile.name,
                                        date: dateTitle,
-                                       text: feedItem.text,
-                                       likes: String(feedItem.likes?.count ?? 0),
-                                       comments: String(feedItem.comments?.count ?? 0),
-                                       shares: String(feedItem.reposts?.count ?? 0),
-                                       views: String(feedItem.views?.count ?? 0),
+                                       text: postText,
+                                       likes: formateCounting(counter: feedItem.likes?.count),
+                                       comments: formateCounting(counter: feedItem.comments?.count),
+                                       shares: formateCounting(counter: feedItem.reposts?.count),
+                                       views: formateCounting(counter: feedItem.views?.count),
                                        photoAttachements: photoAttachments,
                                        sizes: sizes)
+    }
+    
+    private func formateCounting(counter: Int?) -> String? {
+        guard let counter = counter, counter > 0 else { return nil }
+        var countString = String(counter)
+        if 4...6 ~= countString.count {
+            countString = countString.dropLast(3) + "K"
+        } else if countString.count > 6{
+            countString = countString.dropLast(6) + "M"
+        }
+        return countString
     }
     
     private func profile(for sourseId: Int, profiles: [Profile], groups: [Group]) -> ProfileRepresenatable {
