@@ -11,10 +11,12 @@ class NewsfeedViewController: UIViewController, NewsfeedDisplayLogic, NewsfeedCo
   var interactor: NewsfeedBusinessLogic?
   var router: (NSObjectProtocol & NewsfeedRoutingLogic)?
     
-    private var feedViewModel = FeedViewModel.init(cells: [])
+    private var feedViewModel = FeedViewModel.init(cells: [], footerTitle: nil)
   
     @IBOutlet weak var table: UITableView!
     private var titleView = TitleView()
+    private lazy var footerView = FooterView()
+    
     private var refreshCtrl: UIRefreshControl = {
        let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(refreshing), for: .valueChanged)
@@ -61,11 +63,22 @@ class NewsfeedViewController: UIViewController, NewsfeedDisplayLogic, NewsfeedCo
         
         table.separatorStyle = .none
         table.backgroundColor = .clear
-        view.backgroundColor = #colorLiteral(red: 0.1764705926, green: 0.4980392158, blue: 0.7568627596, alpha: 1)
+        
         table.addSubview(refreshCtrl)
+        
+        table.tableFooterView = footerView
     }
     
     private func setupTopBars() {
+        let topBar = UIView(frame: UIApplication.shared.statusBarFrame)
+        topBar.backgroundColor = .white
+        topBar.layer.shadowColor = UIColor.black.cgColor
+        topBar.layer.shadowOpacity = 0.3
+        topBar.layer.shadowOffset = CGSize.zero
+        topBar.layer.shadowRadius = 8
+        
+        self.view.addSubview(topBar)
+        
         self.navigationController?.hidesBarsOnSwipe = true
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationItem.titleView = titleView
@@ -78,13 +91,18 @@ class NewsfeedViewController: UIViewController, NewsfeedDisplayLogic, NewsfeedCo
   func displayData(viewModel: Newsfeed.Model.ViewModel.ViewModelData) {
 
     switch viewModel {
+        
     case .displayNewsfeed(let feedViewModel):
         self.feedViewModel = feedViewModel
         self.table.reloadData()
         self.refreshCtrl.endRefreshing()
+        self.footerView.setTitle(feedViewModel.footerTitle)
         
     case .displayUser(let userViewModel):
         titleView.set(userViewModel: userViewModel)
+        
+    case .displayFooterLoader:
+        footerView.showActivityInd()
     }
   }
     
