@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AuthServiceDelegate {
         
         window?.rootViewController = authVC
         window?.makeKeyAndVisible()
+        
         return true
     }
 
@@ -61,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AuthServiceDelegate {
     
     func authServiceSignIn() {
         print(#function)
+        
         let feedVC: NewsfeedViewController = NewsfeedViewController.loadFromStoryboard()
         let navVC = UINavigationController(rootViewController: feedVC)
         window?.rootViewController = navVC
@@ -69,6 +71,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AuthServiceDelegate {
     func authServiceDidSignInFail() {
         print(#function)
     }
+    
+//    func checkLoggedInt() {
+//        self.authService = AuthService()
+//        authService.delegate = self
+//
+//        authService.wakeUpSession()
+//
+////        let authVC: AuthViewController = AuthViewController.loadFromStoryboard()
+////
+////        window?.rootViewController = authVC
+//
+//    }
 
 }
 

@@ -1,0 +1,16 @@
+PODS:
+  - Pastel (0.5.1)
+
+DEPENDENCIES:
+  - Pastel
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Pastel
+
+SPEC CHECKSUMS:
+  Pastel: b3dd5b8d612dac06ae7c63c97c45c900829bc139
+
+PODFILE CHECKSUM: 041d31d18a0950d54108d484066abb6addda166e
+
+COCOAPODS: 1.5.3

@@ -15,6 +15,7 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
        let dt = DateFormatter()
         dt.locale = Locale(identifier: "ru_RU")
         dt.dateFormat = "d MMM 'в' HH:mm"
+        
         return dt
     }()
   
@@ -26,7 +27,7 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
         let cells = feed.items.map { (feedItem) in
             cellViewModel(from: feedItem, profiles: feed.profiles, groups: feed.groups, revealdedPostIds: revealdedPostIds)
         }
-        let footerTitle = String.localizedStringWithFormat(NSLocalizedString("news feed cell count", comment: ""), cells.count)
+        let footerTitle = String.localizedStringWithFormat(NSLocalizedString("news feed cells count", comment: ""), cells.count)
         let feedViewModel = FeedViewModel.init(cells: cells, footerTitle: footerTitle)
         viewController?.displayData(viewModel: Newsfeed.Model.ViewModel.ViewModelData.displayNewsfeed(feedViewModel: feedViewModel))
         
@@ -45,14 +46,11 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
         
         let photoAttachments = self.photoAttachments(feedItem: feedItem)
         
-        let date = Date(timeIntervalSince1970: feedItem.date)
-        let dateTitle = dateFormatter.string(from: date)
+        
         
         let isFullSized = revealdedPostIds.contains { (postId) -> Bool in
             return postId == feedItem.postId
         }
-        
-        //let isFullSized = revealdedPostIds.contains(feedItem.postId) // краткий вариант записи
         
         let sizes = cellLayoutCalculator.sizes(postText: feedItem.text, photoAttachments: photoAttachments, isFullSizedPost: isFullSized)
         
@@ -61,7 +59,7 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
         return FeedViewModel.Cell.init(postId: feedItem.postId,
                                        iconUrlString: profile.photo,
                                        name: profile.name,
-                                       date: dateTitle,
+                                       date: configureDatePost(feedItem: feedItem),
                                        text: postText,
                                        likes: formateCounting(counter: feedItem.likes?.count),
                                        comments: formateCounting(counter: feedItem.comments?.count),
@@ -69,6 +67,12 @@ class NewsfeedPresenter: NewsfeedPresentationLogic {
                                        views: formateCounting(counter: feedItem.views?.count),
                                        photoAttachements: photoAttachments,
                                        sizes: sizes)
+    }
+    
+    private func configureDatePost(feedItem: FeedItem) -> String {
+        
+        let datePost = Date(timeIntervalSince1970: feedItem.date)
+        return Date().timeSinceDate(fromDate: datePost)
     }
     
     private func formateCounting(counter: Int?) -> String? {
